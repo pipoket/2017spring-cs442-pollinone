@@ -8,16 +8,16 @@ Create and join poll in one action.
 
 People waste a lot of their precious time to gather opinion for simple group activities.
 Think about you and your friends wasting time at fraternities, sororities or school club
-to count*the number of raised hands* again and again to decide where to eat out.
+to count *the number of raised hands* again and again to decide where to eat out.
 
 ## How does it work
 
 With Poll-in-one, you can create a room for vote. The room information is broadcasted
-via bluetooth and sound[^1]  Other friends can join your room by simply launching
+via bluetooth and sound<sup>1</sup>. Other friends can join your room by simply launching
 the application. Their Poll-in-one will catch the broadcasted signal and automatically let
 your friends join the room. Joining a vote can never be easier than using Poll-in-one.
 
-[^1]: Tentative. This may not be implemented at the time of release.
+<sup>[1] Tentative. This feature may not be available at the time of release.</sup>
 
 ## Disclaimer
 
