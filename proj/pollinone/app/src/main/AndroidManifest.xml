@@ -16,8 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreatePoll"/>
-        <activity android:name=".StartVote" />
+        <activity android:name=".CreatingPoll" />
+        <activity android:name=".StartingVote" />
+        <activity android:name=".JoiningPoll" />
+        <activity android:name=".SearchingPoll"></activity>
     </application>
 
 </manifest>
