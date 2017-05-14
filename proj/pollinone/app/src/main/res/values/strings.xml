@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">pollinone</string>
+    <string name="title_activity_create_poll">CreatePoll</string>
 </resources>
