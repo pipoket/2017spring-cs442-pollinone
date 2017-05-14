@@ -19,7 +19,11 @@
         <activity android:name=".CreatingPoll" />
         <activity android:name=".StartingVote" />
         <activity android:name=".JoiningPoll" />
-        <activity android:name=".SearchingPoll"></activity>
+        <activity android:name=".SearchingPoll" />
+        <activity android:name=".WaitingVoteToStart" />
+        <activity android:name=".Voting" />
+        <activity android:name=".VotingHost" />
+        <activity android:name=".VotingResult"></activity>
     </application>
 
 </manifest>
