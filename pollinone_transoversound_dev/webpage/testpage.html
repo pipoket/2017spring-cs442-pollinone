@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Poll-in-one Transmission over the air - Proof of Concept</title>
+        <script src="js/jquery.1.9.1.min.js"></script>
+    </head>
+    <body>
+        <script src='js/DTMFgenerator.js'></script>
+        <script src='js/PollInOneTOA.js'></script>
+
+        <p>
+            <label for="idNumber">Type Number</label>&nbsp;
+            <input type="text" id="idNumber" />
+            <button id="idPlay">Play</button>
+        </p>
+
+        <script type="text/javascript">
+            (function() {
+                $("#idPlay").click(function(evt) {
+                    var toneTime = 300;
+                    var delayTime = 200;
+                    var preambleTime = 500;
+                    var repeatTime = 3;
+                    pollInOneTOA.sendText($("#idNumber").val(), toneTime, delayTime, preambleTime, repeatTime);
+                });
+            })();
+        </script>
+    </body>
+</html>
