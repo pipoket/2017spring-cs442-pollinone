@@ -132,8 +132,14 @@ var pollInOneSTone = (function() {
         if (isPlaying)
             return;
 
-        isPlaying = true;
         var number = parseInt(strNumber);
+        if (number > 65535) {
+            alert("Number should be smaller than 65535");
+            return;
+        }
+
+        isPlaying = true;
+
         var hexStrNumber = "";
         while (number > 0) {
             var quo = Math.floor(number / 16);
@@ -142,11 +148,27 @@ var pollInOneSTone = (function() {
             number = quo;
         }
 
-        while (hexStrNumber.length < 8) {
+        while (hexStrNumber.length < 4) {
             hexStrNumber = "0" + hexStrNumber;
         }
-        console.log("strNumber " + strNumber + " => 0x" + hexStrNumber);
-        sendText(hexStrNumber, toneTime, delayTime, preambleTime, repeat);
+
+        var rs = new ReedSolomon(2);
+        var enc = rs.encode(hexStrNumber);
+        console.log("enc: " + enc);
+
+        var encString = "";
+        for (var i = 0; i < enc.length; i++) {
+            if (i < 4) {
+                encString += String.fromCharCode(enc[i]);
+            } else {
+                var conv = Number(enc[i]).toString(16);
+                if (conv.length == 1)
+                    encString += "0";
+                encString += conv;
+            }
+        }
+        console.log("strNumber " + strNumber + " => 0x" + hexStrNumber + " => enc: " + encString);
+        sendText(encString, toneTime, delayTime, preambleTime, repeat);
     }
 
     var stopSending = function() {

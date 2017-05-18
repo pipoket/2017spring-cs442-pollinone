@@ -5,6 +5,8 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Handler
 import android.util.Log
+import com.google.zxing.common.reedsolomon.GenericGF
+import com.google.zxing.common.reedsolomon.ReedSolomonDecoder
 import org.jtransforms.fft.DoubleFFT_1D
 import kotlin.concurrent.thread
 
@@ -167,11 +169,34 @@ class AudioDTMFReceiver(
                     thread {
                         val result = parseData(sampleBuffer)
                         if (result != null) {
-                            val dataPayload = result!!
-                            val dataString = dataPayload.fold("", { acc, s -> val newAcc = acc + s; newAcc })
-                            mCbSuccess(dataString)
-                            mState = ReceiverState.RECEIVE_DONE
-                            close()
+                            val payload = result!!
+
+                            val rawDataArray = IntArray(6, { idx ->
+                                if (idx < 4) {
+                                    Log.v("ReedSolomon", "${payload[idx].toCharArray()[0].toInt()}")
+                                    payload[idx].toCharArray()[0].toInt()
+                                } else if (idx == 4) {
+                                    val chksum = payload[4] + payload[5]
+                                    Log.v("ReedSolomon", "${chksum.toInt(16)}")
+                                    chksum.toInt(16)
+                                } else {
+                                    val chksum = payload[6] + payload[7]
+                                    Log.v("ReedSolomon", "${chksum.toInt(16)}")
+                                    chksum.toInt(16)
+                                }
+                            })
+
+                            try {
+                                val decoder = ReedSolomonDecoder(GenericGF.QR_CODE_FIELD_256)
+                                decoder.decode(rawDataArray, 2)
+                                val dataString = String(rawDataArray, 0, 4)
+                                mCbSuccess(dataString)
+                                mState = ReceiverState.RECEIVE_DONE
+                                close()
+                            } catch (x: Throwable) {
+                                mState = ReceiverState.LISTEN
+                                mCbStateUpdate(mState)
+                            }
                         } else {
                             mState = ReceiverState.LISTEN
                             mCbStateUpdate(mState)
@@ -285,7 +310,10 @@ class AudioDTMFReceiver(
             if (peak == null) {
                 prevDataFreq = 0
             } else {
-                if (peak.first != REV_TONEMAP[mPreambleChar]) {
+                if (peak.first == REV_TONEMAP[mPreambleChar]) {
+                    if (!dataList.isEmpty())
+                        dataList.clear()
+                } else {
                     val dataFreq = peak.first
 
                     if (prevDataFreq != dataFreq) {

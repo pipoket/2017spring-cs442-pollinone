@@ -5,6 +5,8 @@
         <script src="js/jquery.1.9.1.min.js"></script>
     </head>
     <body>
+        <script src='js/class.js'></script>
+        <script src='js/ReedSolomon.js'></script>
         <script src='js/ToneGenerator.js'></script>
         <script src='js/DTMFgenerator.js'></script>
         <script src='js/PollInOneTOA.js'></script>
@@ -18,10 +20,13 @@
 
         <h1>SingleTone Generator</h1>
         <p>
-            <label for="idSToneNumber">Type Number</label>&nbsp;
+            <label for="idSToneNumber">Type Number(0 - 65535)</label>&nbsp;
             <input type="text" id="idSToneNumber" />
             <button id="idSTonePlay">Play</button>&nbsp;
             <button id="idSToneStop">Stop</button>&nbsp;
+            <audio id="idSToneBgm" loop style="visible:none;">
+                <source src="media/bgm.mp3" type="audio/mpeg" id="idSToneBgm">
+            </audio>
         </p>
         <script type="text/javascript">
             (function() {
@@ -36,13 +41,15 @@
                 $("#idSTonePlay").click(function(evt) {
                     var toneTime = 100;
                     var delayTime = 200;
-                    var preambleTime = 100;
+                    var preambleTime = 200;
                     var repeatTime = 50;
                     pollInOneSTone.sendNumber($("#idSToneNumber").val(), toneTime, delayTime, preambleTime, repeatTime);
+                    //document.getElementById("idSToneBgm").play();
                 });
 
                 $("#idSToneStop").click(function(evt) {
                     pollInOneSTone.stopSending();
+                    //document.getElementById("idSToneBgm").pause();
                 });
             })();
         </script>
