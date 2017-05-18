@@ -19,7 +19,7 @@ var toneGenerator = (function() {
         gainNode = context.createGain ? context.createGain() : context.createGainNode();
         oscillator1.connect(gainNode,0,0);
         gainNode.connect(context.destination);
-        gainNode.gain.value = .9;
+        gainNode.gain.value = .5;
         oscillator1.start ? oscillator1.start(0) : oscillator1.noteOn(0)
       };
 
