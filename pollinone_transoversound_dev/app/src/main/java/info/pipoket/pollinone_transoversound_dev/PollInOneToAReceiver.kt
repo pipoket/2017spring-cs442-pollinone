@@ -15,7 +15,7 @@ import kotlin.concurrent.thread
  * Created by pipoket on 2017. 5. 16..
  */
 
-class AudioDTMFReceiver(
+class PollInOneToAReceiver(
         cbStateUpdate: (ReceiverState) -> Unit,
         cbSuccess: (String) -> Unit,
         cbFailure: (ErrorCode) -> Unit
@@ -38,51 +38,15 @@ class AudioDTMFReceiver(
         UNKNOWN,
     }
 
-    val TONEMAP: HashMap<Int, String> = hashMapOf(
-            990 to "0",
-            1108 to "1",
-            1216 to "2",
-            1324 to "3",
-            1442 to "4",
-            1550 to "5",
-            1658 to "6",
-            1776 to "7",
-            1884 to "8",
-            1991 to "9",
-            2110 to "a",
-            2217 to "b",
-            2325 to "c",
-            2433 to "d",
-            2551 to "e",
-            2659 to "f",
-            2767 to "g"
-    )
-    val REV_TONEMAP: HashMap<String, Int> = hashMapOf (
-            "0" to 990,
-            "1" to 1108,
-            "2" to 1216,
-            "3" to 1324,
-            "4" to 1442,
-            "5" to 1550,
-            "6" to 1658,
-            "7" to 1776,
-            "8" to 1884,
-            "9" to 1991,
-            "a" to 2110,
-            "b" to 2217,
-            "c" to 2325,
-            "d" to 2433,
-            "e" to 2551,
-            "f" to 2659,
-            "g" to 2767
-    )
+    private val TONEMAP = ToneMap.High
+    private val REV_TONEMAP = ToneMap.revHigh
 
     private val mSamplingRate = 44100
-    private val mSampleDuration = 4 // seconds
+    private val mSampleDuration = 2.6 // seconds
     private val mSampleBufferSize = (mSamplingRate * mSampleDuration).toInt()
     private var mState = ReceiverState.INIT
 
-    private val mThreshold = 2.0
+    private val mThreshold = 1.0
     private val mPreambleChar  = "g"
     private val mPayloadSize = 8  // characters
 
@@ -297,7 +261,7 @@ class AudioDTMFReceiver(
         while (dataIdx < sampleBuffer.size) {
             for (fftIndex in 0..chunkSize-1) {
                 val sampleIndex = dataIdx + fftIndex
-                if (sampleIndex < mSampleBufferSize)
+                if (sampleIndex < sampleBuffer.size)
                     fftBuffer[(2 * fftIndex)] = sampleBuffer[sampleIndex] / 32768.0
                 else
                     fftBuffer[(2 * fftIndex)] = 0.0
@@ -327,7 +291,7 @@ class AudioDTMFReceiver(
                 }
             }
 
-            dataIdx += chunkSize
+            dataIdx += chunkSize /2
         }
 
         return null

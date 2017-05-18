@@ -12,7 +12,7 @@ import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    var dtmfReceiver: AudioDTMFReceiver? = null
+    var dtmfReceiver: PollInOneToAReceiver? = null
 
     companion object {
         val PERM_REQUEST_CODE_RECORD = 0
@@ -47,10 +47,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun resetReceiver() {
-        dtmfReceiver = AudioDTMFReceiver(
-                { state: AudioDTMFReceiver.ReceiverState -> stateUpdated(state) },
+        dtmfReceiver = PollInOneToAReceiver(
+                { state: PollInOneToAReceiver.ReceiverState -> stateUpdated(state) },
                 { result: String -> dataReceived(result) },
-                { errorCode: AudioDTMFReceiver.ErrorCode -> receiveError(errorCode) }
+                { errorCode: PollInOneToAReceiver.ErrorCode -> receiveError(errorCode) }
         )
         btnListen.isEnabled = true
         btnCancel.isEnabled = false
@@ -58,14 +58,14 @@ class MainActivity : AppCompatActivity() {
         checkPermission()
     }
 
-    fun stateUpdated(state: AudioDTMFReceiver.ReceiverState) {
+    fun stateUpdated(state: PollInOneToAReceiver.ReceiverState) {
         val mainHandler = Handler(this.mainLooper)
         mainHandler.post {
             when (state) {
-                AudioDTMFReceiver.ReceiverState.INIT -> txtStatus.text = "Initialized"
-                AudioDTMFReceiver.ReceiverState.LISTEN -> txtStatus.text = "Listening"
-                AudioDTMFReceiver.ReceiverState.PARSE_DATA -> txtStatus.text = "Parsing"
-                AudioDTMFReceiver.ReceiverState.RECEIVE_DONE -> txtStatus.text = "Got Data!"
+                PollInOneToAReceiver.ReceiverState.INIT -> txtStatus.text = "Initialized"
+                PollInOneToAReceiver.ReceiverState.LISTEN -> txtStatus.text = "Listening"
+                PollInOneToAReceiver.ReceiverState.PARSE_DATA -> txtStatus.text = "Parsing"
+                PollInOneToAReceiver.ReceiverState.RECEIVE_DONE -> txtStatus.text = "Got Data!"
                 else -> txtStatus.text = "Unknown State"
             }
         }
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun receiveError(errorCode: AudioDTMFReceiver.ErrorCode) {
+    fun receiveError(errorCode: PollInOneToAReceiver.ErrorCode) {
         Log.i("MainActivity", "Error received $errorCode")
 
         val mainHandler = Handler(this.mainLooper)

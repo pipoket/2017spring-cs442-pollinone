@@ -25,7 +25,7 @@
             <button id="idSTonePlay">Play</button>&nbsp;
             <button id="idSToneStop">Stop</button>&nbsp;
             <audio id="idSToneBgm" loop style="visible:none;">
-                <source src="media/bgm.mp3" type="audio/mpeg" id="idSToneBgm">
+                <source src="media/bgm_hp.mp3" type="audio/mpeg" id="idSToneBgm">
             </audio>
         </p>
         <script type="text/javascript">
@@ -39,17 +39,17 @@
                 });
 
                 $("#idSTonePlay").click(function(evt) {
-                    var toneTime = 100;
-                    var delayTime = 200;
+                    var toneTime = 50;
+                    var delayTime = 100;
                     var preambleTime = 200;
                     var repeatTime = 50;
                     pollInOneSTone.sendNumber($("#idSToneNumber").val(), toneTime, delayTime, preambleTime, repeatTime);
-                    //document.getElementById("idSToneBgm").play();
+                    document.getElementById("idSToneBgm").play();
                 });
 
                 $("#idSToneStop").click(function(evt) {
                     pollInOneSTone.stopSending();
-                    //document.getElementById("idSToneBgm").pause();
+                    document.getElementById("idSToneBgm").pause();
                 });
             })();
         </script>
