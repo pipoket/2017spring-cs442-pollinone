@@ -39,17 +39,17 @@
                 });
 
                 $("#idSTonePlay").click(function(evt) {
-                    var toneTime = 50;
-                    var delayTime = 100;
+                    var toneTime = 100;
+                    var delayTime = 200;
                     var preambleTime = 200;
                     var repeatTime = 50;
                     pollInOneSTone.sendNumber($("#idSToneNumber").val(), toneTime, delayTime, preambleTime, repeatTime);
-                    document.getElementById("idSToneBgm").play();
+                    //document.getElementById("idSToneBgm").play();
                 });
 
                 $("#idSToneStop").click(function(evt) {
                     pollInOneSTone.stopSending();
-                    document.getElementById("idSToneBgm").pause();
+                    //document.getElementById("idSToneBgm").pause();
                 });
             })();
         </script>
