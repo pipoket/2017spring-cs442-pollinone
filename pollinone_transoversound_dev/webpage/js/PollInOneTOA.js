@@ -72,23 +72,23 @@ var pollInOneSTone = (function() {
         "a", "b", "c", "d", "e", "f"
     ];
     var toneMap = {
-        "0": 2000, 
-        "1": 2111,
+        "0": 2000,
+        "1": 2112,
         "2": 2222,
-        "3": 2333,
+        "3": 2330,
         "4": 2444,
-        "5": 2555,
+        "5": 2556,
         "6": 2666,
-        "7": 2777,
+        "7": 2770,
         "8": 2888,
-        "9": 2999,
-        "a": 3111,
+        "9": 2996,
+        "a": 3110,
         "b": 3222,
-        "c": 3333,
+        "c": 3330,
         "d": 3444,
-        "e": 3555,
+        "e": 3558,
         "f": 3666,
-        "g": 3777,
+        "g": 3770,
     };
 
     var isPlaying = false;
@@ -101,7 +101,7 @@ var pollInOneSTone = (function() {
 
         timerList.push(setTimeout(function() {
             console.log(character, toneFreq);
-            toneGenerator.playTone(toneFreq);
+            toneGenerator.playTone(toneFreq, Math.floor(toneFreq / 2));
         }, startTime));
         timerList.push(setTimeout(function() {
             toneGenerator.stop();
