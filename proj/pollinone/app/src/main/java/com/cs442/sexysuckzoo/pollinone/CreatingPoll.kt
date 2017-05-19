@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.activity_create_poll.*
 import java.util.ArrayList
 
 import com.cs442.sexysuckzoo.pollinone.service.PollService
+import com.cs442.sexysuckzoo.pollinone.service.StorageService
 
 class CreatingPoll : AppCompatActivity() {
     internal var mAllEds: MutableList<EditText> = ArrayList()
@@ -89,11 +90,10 @@ class CreatingPoll : AppCompatActivity() {
             return
         }
         PollService.instance.createPoll(title, itemCount).map {
+            StorageService.instance.vote = it
             val intent = Intent(applicationContext, StartingVote::class.java)
-            intent.putExtra("POLL_OBJECT", it)
             startActivity(intent)
             finish()
-            // it
         }.doOnError {
             Toast.makeText(applicationContext, "Failed communication with server", Toast.LENGTH_LONG).show()
         }.subscribe {

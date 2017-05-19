@@ -10,6 +10,7 @@ data class Vote(val id: Int,
                 val status: String,
                 val itemCount: Int,
                 val currentItem: Int) {
+
     class Deserializer : ResponseDeserializable<Vote> {
         override fun deserialize(content: String) = Gson().fromJson(content, Vote::class.java)
     }
