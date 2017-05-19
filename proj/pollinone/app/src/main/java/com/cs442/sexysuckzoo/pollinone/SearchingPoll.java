@@ -17,7 +17,7 @@ public class SearchingPoll extends AppCompatActivity {
             @Override
             public void run() {
                 //Do something after 2000ms
-                Intent intent = new Intent(getApplicationContext(), JoiningPoll.class);
+                Intent intent = new Intent(getApplicationContext(), StartingVote.class);
                 startActivity(intent);
                 finish();
             }

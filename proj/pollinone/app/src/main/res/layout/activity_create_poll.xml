@@ -13,26 +13,73 @@
         tools:layout_editor_absoluteY="8dp"
         tools:layout_editor_absoluteX="0dp">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="400dp">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Name"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/inputPollName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Poll Name" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/choiceListLayout">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/button_add_target"
-                    style="@android:style/Widget.Button"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="+"
-                    android:textSize="36sp"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
+                    android:layout_weight="1"
+                    android:text="Choice #1"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/inputPollChoice1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:text="choice 1" />
+
             </LinearLayout>
-        </ScrollView>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_add_target"
+            style="@android:style/Widget.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            android:onClick="addChoice"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,7 +95,8 @@
                 android:layout_weight="1"
                 android:text="Create"
                 android:textSize="30sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:onClick="createPoll"/>
 
             <Button
                 android:id="@+id/button_cancle"
@@ -59,7 +107,10 @@
                 android:layout_weight="1"
                 android:text="Cancle"
                 android:textSize="30sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:onClick="cancleCreating"
+                />
+
         </LinearLayout>
 
     </LinearLayout>
