@@ -21,7 +21,6 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     private val entries = ArrayList<String>()
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mActiveMessage: Message? = null
-    private var mMessageListener: MessageListener? = null
 
     private var roomId = "Vote #1"
 
@@ -37,31 +36,6 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
         entries.add("Waiting for users to join")
         refreshUI()
-
-        // subscribe model
-        mMessageListener = object : MessageListener()
-        {
-            override fun onFound(message: Message) {
-                var messageAsString = String(message.getContent());
-                var json : JSONObject? = JSONObject(messageAsString)
-
-                if (json?.has("roomId") as Boolean) {
-                    // this message is sent from host. ignore it.
-                }
-                else {
-                    // TODO : add the user and count them.
-                    var userId = json?.getString("userId")
-                    entries.add(userId)
-                    refreshUI()
-                }
-                Log.d("StartVote", "Found message: " + messageAsString);
-            }
-
-            override fun onLost(message: Message) {
-                var messageAsString = String(message.getContent());
-                Log.d("StartVote", "Lost sight of message: " + messageAsString);
-            }
-        }
     }
 
     override fun onStart() {
@@ -71,7 +45,6 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     override fun onStop() {
         unpublish();
-        unsubscribe();
         if (mGoogleApiClient?.isConnected() as Boolean) {
             mGoogleApiClient?.disconnect()
         }
@@ -115,11 +88,6 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             Nearby.Messages.unpublish(mGoogleApiClient, mActiveMessage)
             mActiveMessage = null
         }
-    }
-
-    private fun unsubscribe() {
-        Log.i("StartVote", "Unsubscribing.")
-        Nearby.Messages.unsubscribe(mGoogleApiClient, mMessageListener)
     }
 
     override fun onConnectionFailed(result: ConnectionResult) {
