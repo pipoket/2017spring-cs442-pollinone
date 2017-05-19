@@ -44,7 +44,7 @@
             android:textSize="40sp" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/nextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -52,7 +52,8 @@
             android:text="Next Choice"
             android:textAlignment="center"
             android:textAllCaps="false"
-            android:textSize="40sp" />
+            android:textSize="40sp"
+            android:onClick="onNextButtonClick"/>
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

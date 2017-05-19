@@ -75,7 +75,7 @@ public class CreatingPoll extends AppCompatActivity {
 
     // button callback
     public void createPoll(View v){
-        Intent intent = new Intent(getApplicationContext(), JoiningPoll.class);
+        Intent intent = new Intent(getApplicationContext(), StartingVote.class);
         startActivity(intent);
 
         finish();
