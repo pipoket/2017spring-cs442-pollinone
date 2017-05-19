@@ -63,5 +63,25 @@
             android:text="NO DATA"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="1" />
+
+        <EditText
+            android:id="@+id/txtSendNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Send" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

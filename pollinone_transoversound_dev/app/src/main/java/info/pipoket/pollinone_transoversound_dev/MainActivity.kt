@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     var dtmfReceiver: PollInOneToAReceiver? = null
+    var dtmfSender: PollInOneToASender? = null
 
     companion object {
         val PERM_REQUEST_CODE_RECORD = 0
@@ -32,8 +33,12 @@ class MainActivity : AppCompatActivity() {
         btnCancel.setOnClickListener {
             dtmfReceiver?.close()
         }
+        btnSend.setOnClickListener {
+            dtmfSender?.sendData(txtSendNumber.text.toString().toInt())
+        }
 
         resetReceiver()
+        dtmfSender = PollInOneToASender()
     }
 
     override fun onResume() {
@@ -44,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         dtmfReceiver?.close()
+        dtmfSender?.close()
     }
 
     fun resetReceiver() {

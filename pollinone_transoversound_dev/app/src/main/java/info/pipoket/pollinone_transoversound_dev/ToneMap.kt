@@ -60,6 +60,25 @@ object ToneMap {
             "f" to 3660,
             "g" to 3746
     )
+    val revTrueHigh: HashMap<String, Int> = hashMapOf (
+            "0" to 2000,
+            "1" to 2112,
+            "2" to 2222,
+            "3" to 2330,
+            "4" to 2444,
+            "5" to 2556,
+            "6" to 2666,
+            "7" to 2770,
+            "8" to 2888,
+            "9" to 2996,
+            "a" to 3110,
+            "b" to 3222,
+            "c" to 3330,
+            "d" to 3444,
+            "e" to 3558,
+            "f" to 3666,
+            "g" to 3770
+    )
 
     // FIXME: Based on FFT with size 4096
     val low: HashMap<Int, String> = hashMapOf(
