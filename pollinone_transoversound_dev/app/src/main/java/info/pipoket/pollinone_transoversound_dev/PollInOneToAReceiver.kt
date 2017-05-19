@@ -200,7 +200,7 @@ class PollInOneToAReceiver(
         }
 
         Log.i("AudioDTMFReceiver [$mState]", "$peaks")
-        if (peaks.size > 2) {
+        if (peaks.size > 1) {
             var maxPow = 0.0
             var maxPeak: Pair<Int, Double>? = null
             peaks.forEach { peak ->
@@ -291,7 +291,7 @@ class PollInOneToAReceiver(
                 }
             }
 
-            dataIdx += chunkSize /2
+            dataIdx += chunkSize / 2
         }
 
         return null
