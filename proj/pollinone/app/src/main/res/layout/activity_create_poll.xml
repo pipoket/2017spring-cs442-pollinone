@@ -10,8 +10,8 @@
         android:layout_width="368dp"
         android:layout_height="495dp"
         android:orientation="vertical"
-        tools:layout_editor_absoluteY="8dp"
-        tools:layout_editor_absoluteX="0dp">
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,7 +28,7 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/inputPollName"
+                android:id="@+id/inputPollTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -39,10 +39,10 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/choiceListLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/choiceListLayout">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,33 +53,22 @@
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Choice #1"
+                    android:text="Item #"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/inputPollChoice1"
+                    android:id="@+id/inputItemCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="textPersonName"
-                    android:text="choice 1" />
+                    android:inputType="numberDecimal"
+                    android:text="2" />
 
             </LinearLayout>
         </LinearLayout>
-
-        <Button
-            android:id="@+id/button_add_target"
-            style="@android:style/Widget.Button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="+"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:visibility="visible"
-            android:onClick="addChoice"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -93,23 +82,22 @@
                 android:layout_height="match_parent"
                 android:layout_margin="15px"
                 android:layout_weight="1"
+                android:onClick="createPoll"
                 android:text="Create"
                 android:textSize="30sp"
-                android:textStyle="bold"
-                android:onClick="createPoll"/>
+                android:textStyle="bold" />
 
             <Button
-                android:id="@+id/button_cancle"
+                android:id="@+id/button_cancel"
                 style="@android:style/Widget.Button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="15px"
                 android:layout_weight="1"
-                android:text="Cancle"
+                android:onClick="cancelCreating"
+                android:text="Cancel"
                 android:textSize="30sp"
-                android:textStyle="bold"
-                android:onClick="cancleCreating"
-                />
+                android:textStyle="bold" />
 
         </LinearLayout>
 
