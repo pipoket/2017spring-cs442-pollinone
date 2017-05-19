@@ -100,8 +100,8 @@ var pollInOneSTone = (function() {
             return startTime;
 
         timerList.push(setTimeout(function() {
-            console.log(character, toneFreq);
-            toneGenerator.playTone(toneFreq, Math.floor(toneFreq / 2));
+            //console.log(character, toneFreq);
+            toneGenerator.playTone(toneFreq, Math.floor(toneFreq / 2), toneFreq * 2);
         }, startTime));
         timerList.push(setTimeout(function() {
             toneGenerator.stop();
@@ -132,12 +132,8 @@ var pollInOneSTone = (function() {
         if (isPlaying)
             return;
 
+        var numberBytes = 4;
         var number = parseInt(strNumber);
-        if (number > 65535) {
-            alert("Number should be smaller than 65535");
-            return;
-        }
-
         isPlaying = true;
 
         var hexStrNumber = "";
@@ -148,7 +144,7 @@ var pollInOneSTone = (function() {
             number = quo;
         }
 
-        while (hexStrNumber.length < 4) {
+        while (hexStrNumber.length < numberBytes) {
             hexStrNumber = "0" + hexStrNumber;
         }
 
@@ -158,7 +154,7 @@ var pollInOneSTone = (function() {
 
         var encString = "";
         for (var i = 0; i < enc.length; i++) {
-            if (i < 4) {
+            if (i < numberBytes) {
                 encString += String.fromCharCode(enc[i]);
             } else {
                 var conv = Number(enc[i]).toString(16);

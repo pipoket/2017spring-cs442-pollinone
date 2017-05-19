@@ -12,9 +12,10 @@ var toneGenerator = (function() {
 
       var oscillator1;
 
-      var playTone = function(freq1, freq2){
+      var playTone = function(freq1, freq2, freq3){
         if (typeof oscillator1 != 'undefined') oscillator1.disconnect();
         if (typeof oscillator2 != 'undefined') oscillator2.disconnect();
+        if (typeof oscillator3 != 'undefined') oscillator3.disconnect();
 
         oscillator1 = context.createOscillator();
         oscillator1.type = 'sine';
@@ -33,11 +34,21 @@ var toneGenerator = (function() {
         gainNode.connect(context.destination);
         gainNode.gain.value = .9;
         oscillator2.start ? oscillator2.start(0) : oscillator2.noteOn(0)
+
+        oscillator3 = context.createOscillator();
+        oscillator3.type = 'sine';
+        oscillator3.frequency.value = freq3;
+        gainNode = context.createGain ? context.createGain() : context.createGainNode();
+        oscillator3.connect(gainNode);
+        gainNode.connect(context.destination);
+        gainNode.gain.value = .9;
+        oscillator3.start ? oscillator3.start(0) : oscillator3.noteOn(0)
       };
 
       function stop() {
         if (typeof oscillator1 != 'undefined') oscillator1.disconnect();
         if (typeof oscillator2 != 'undefined') oscillator2.disconnect();
+        if (typeof oscillator3 != 'undefined') oscillator3.disconnect();
       }
 
       return {

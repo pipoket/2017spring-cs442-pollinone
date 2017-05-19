@@ -20,7 +20,7 @@
 
         <h1>SingleTone Generator</h1>
         <p>
-            <label for="idSToneNumber">Type Number(0 - 65535)</label>&nbsp;
+            <label for="idSToneNumber">Type Number (0-65535)</label>&nbsp;
             <input type="text" id="idSToneNumber" />
             <button id="idSTonePlay">Play</button>&nbsp;
             <button id="idSToneStop">Stop</button>&nbsp;
@@ -39,9 +39,9 @@
                 });
 
                 $("#idSTonePlay").click(function(evt) {
-                    var toneTime = 100;
-                    var delayTime = 200;
-                    var preambleTime = 200;
+                    var toneTime = 23;
+                    var delayTime = 23 * 3;
+                    var preambleTime = 23 * 3;
                     var repeatTime = 50;
                     pollInOneSTone.sendNumber($("#idSToneNumber").val(), toneTime, delayTime, preambleTime, repeatTime);
                     //document.getElementById("idSToneBgm").play();
