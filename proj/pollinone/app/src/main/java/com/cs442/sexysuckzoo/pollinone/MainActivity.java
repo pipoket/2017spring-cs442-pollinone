@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     // button callback
     public void joiningPoll(View v) {
-        Intent intent = new Intent(this, SearchingPoll.class);
+        Intent intent = new Intent(this, JoiningPoll.class);
         startActivity(intent);
     }
 
