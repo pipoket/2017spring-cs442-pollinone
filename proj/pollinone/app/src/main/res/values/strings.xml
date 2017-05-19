@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">pollinone</string>
     <string name="title_activity_create_poll">CreatePoll</string>
+    <string name="api_root">http://poll-in-one.mycodeis.sexy:8888</string>
 </resources>
