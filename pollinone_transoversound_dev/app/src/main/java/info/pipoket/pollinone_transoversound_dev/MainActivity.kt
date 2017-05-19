@@ -116,6 +116,9 @@ class MainActivity : AppCompatActivity() {
         if (requestCode != PERM_REQUEST_CODE_RECORD)
             return
 
+        if (grantResults.isEmpty())
+            return
+
         if (grantResults[0] != PackageManager.PERMISSION_GRANTED)
             return
 
