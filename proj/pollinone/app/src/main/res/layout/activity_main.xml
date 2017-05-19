@@ -18,7 +18,8 @@
             android:layout_weight="1"
             android:layout_margin="40px"
             android:textSize="40sp"
-            android:text="Join" />
+            android:text="Join"
+            android:onClick="joiningPoll"/>
 
         <Button
             android:id="@+id/button_create"
@@ -27,7 +28,8 @@
             android:layout_weight="1"
             android:layout_margin="40px"
             android:textSize="40sp"
-            android:text="Create" />
+            android:text="Create"
+            android:onClick="creatingPoll"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
