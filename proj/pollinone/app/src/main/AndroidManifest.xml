@@ -3,6 +3,9 @@
     package="com.cs442.sexysuckzoo.pollinone">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:allowBackup="true"
@@ -13,8 +16,7 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.nearby.messages.API_KEY"
-            android:value="AIzaSyA_vRK17T_ccc2Duk385TPpACv2J6KbdkI" />
-
+            android:value="AIzaSyDFCZAoJLX7FGcucZYkVB0sywaDqbl9x0o" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
