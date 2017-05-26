@@ -34,16 +34,22 @@ class MainActivity : AppCompatActivity() {
             dtmfReceiver?.close()
         }
         btnSend.setOnClickListener {
+            btnSend.isEnabled = false
+            btnSendStop.isEnabled = true
             dtmfSender?.sendData(txtSendNumber.text.toString().toInt())
+        }
+        btnSendStop.setOnClickListener {
+            dtmfSender?.close()
         }
 
         resetReceiver()
-        dtmfSender = PollInOneToASender()
+        resetSender()
     }
 
     override fun onResume() {
         super.onResume()
         resetReceiver()
+        resetSender()
     }
 
     override fun onPause() {
@@ -55,13 +61,21 @@ class MainActivity : AppCompatActivity() {
     fun resetReceiver() {
         dtmfReceiver = PollInOneToAReceiver(
                 { state: PollInOneToAReceiver.ReceiverState -> stateUpdated(state) },
-                { result: String -> dataReceived(result) },
+                { result: Pair<String, Int> -> dataReceived(result) },
                 { errorCode: PollInOneToAReceiver.ErrorCode -> receiveError(errorCode) }
         )
         btnListen.isEnabled = true
         btnCancel.isEnabled = false
         txtStatus.text = "Initialized"
         checkPermission()
+    }
+
+    fun resetSender() {
+        dtmfSender = PollInOneToASender(
+                { sendStopped() }
+        )
+        btnSend.isEnabled = true
+        btnSendStop.isEnabled = false
     }
 
     fun stateUpdated(state: PollInOneToAReceiver.ReceiverState) {
@@ -77,13 +91,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun dataReceived(result: String) {
+    fun dataReceived(result: Pair<String, Int>) {
         Log.i("MainActivity", "Data received $result")
 
         val mainHandler = Handler(this.mainLooper)
         mainHandler.post {
-            txtRawData.text = "0x$result"
-            txtIntData.text = result.toInt(16).toString()
+            txtRawData.text = "0x${result.first}"
+            txtIntData.text = result.second.toString()
             resetReceiver()
             if (!btnListen.isEnabled) {
                 btnListen.isEnabled = true
@@ -102,6 +116,14 @@ class MainActivity : AppCompatActivity() {
                 btnListen.isEnabled = true
                 btnCancel.isEnabled = false
             }
+        }
+    }
+
+    fun sendStopped() {
+        val mainHandler = Handler(this.mainLooper)
+
+        mainHandler.post {
+            resetSender()
         }
     }
 

@@ -39,9 +39,9 @@
                 });
 
                 $("#idSTonePlay").click(function(evt) {
-                    var toneTime = 23;
+                    var toneTime = 23 * 2;
                     var delayTime = 23 * 4;
-                    var preambleTime = 23 * 3;
+                    var preambleTime = 23 * 2;
                     var repeatTime = 50;
                     pollInOneSTone.sendNumber($("#idSToneNumber").val(), toneTime, delayTime, preambleTime, repeatTime);
                     //document.getElementById("idSToneBgm").play();
