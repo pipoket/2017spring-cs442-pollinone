@@ -282,8 +282,12 @@ class PollInOneToAReceiver(
             val peak = searchPeaks(fftBuffer)
             Log.i("AudioDTMFReceiver [$mState]", "$peak")
             if (flagPreamble) {
-                if (peak == null)
+                if (peak == null) {
                     flagPreamble = false
+                } else if (peak.first != 3746 && peak.first != 7536) {
+                    flagPreamble = false
+                    continue
+                }
             } else {
                 // Handle repeated preamble as an error case
                 if (peak?.first == 3746 || peak?.first == 7536)
