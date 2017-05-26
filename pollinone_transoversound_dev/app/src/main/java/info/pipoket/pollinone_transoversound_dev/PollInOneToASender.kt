@@ -22,7 +22,7 @@ class PollInOneToASender {
     private val mSendChunkSize = 1024
     private val mToneCount = 1
     private val mPreambleCount = 3
-    private val mDelayCount = 3
+    private val mDelayCount = 4
 
 
     private val mThreshold = 1.0

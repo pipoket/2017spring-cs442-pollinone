@@ -52,7 +52,7 @@ class PollInOneToAReceiver(
 
     // Both are in seconds
     private val mToneLength: Double = mParseChunkSize.toDouble() / mSamplingRate
-    private val mGuardLengthMultiplier = 3
+    private val mGuardLengthMultiplier = 4
 
     /**
      * Give the thread high priority so that it's not canceled unexpectedly, and start it
