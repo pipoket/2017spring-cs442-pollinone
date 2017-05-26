@@ -165,7 +165,7 @@ class PollInOneToASender (
                             buffer[i] = applyHeadroom(sound)
                         }
                         System.arraycopy(buffer, 0, wholeBuffer, wholeBufferPtr, mSendChunkSize)
-                        wholeBufferPtr += mSendChunkSize
+                        wholeBufferPtr += (mSendChunkSize * mToneCount)
                     }
 
                     let {
@@ -178,10 +178,9 @@ class PollInOneToASender (
                 }
 
                 audioTrack.setStereoVolume(AudioTrack.getMaxVolume(), AudioTrack.getMaxVolume())
+                audioTrack.play()
                 while(mFlagPlay) {
-                    audioTrack.play()
                     audioTrack.write(wholeBuffer, 0, wholeBuffer.size)
-                    audioTrack.stop()
                 }
             } finally {
                 audioTrack.stop()

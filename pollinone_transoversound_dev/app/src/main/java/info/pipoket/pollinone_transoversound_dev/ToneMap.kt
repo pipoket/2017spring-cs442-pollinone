@@ -46,6 +46,45 @@ object ToneMap {
     val bottomPreambleFreq = 3746
     val topPreambleFreq = 7536
 
+    val revBottom : HashMap<String, Int> = hashMapOf(
+            "0" to 1981,
+            "1" to 2110,
+            "2" to 2196,
+            "3" to 2325,
+            "4" to 2411,
+            "5" to 2540,
+            "6" to 2627,
+            "7" to 2756,
+            "8" to 2885,
+            "9" to 2971,
+            "a" to 3100,
+            "b" to 3186,
+            "c" to 3316,
+            "d" to 3402,
+            "e" to 3531,
+            "f" to 3660,
+            "g" to 3746
+    )
+    val revTop: HashMap<String, Int> = hashMapOf(
+            "0" to 3962,
+            "1" to 4220,
+            "2" to 4435,
+            "3" to 4651,
+            "4" to 4866,
+            "5" to 5081,
+            "6" to 5297,
+            "7" to 5512,
+            "8" to 5770,
+            "9" to 5986,
+            "a" to 6201,
+            "b" to 6416,
+            "c" to 6632,
+            "d" to 6847,
+            "e" to 7105,
+            "f" to 7321,
+            "g" to 7536
+    )
+
     // True frequencies used to tramsmit data
     val revTopTrue: HashMap<String, Int> = hashMapOf (
             "0" to 2000,

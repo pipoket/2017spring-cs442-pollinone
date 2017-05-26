@@ -48,24 +48,20 @@ class PollInOneToAReceiver(
 
     private val mParseChunkSize = 1024
     private val mSamplingRate = 44100
-    private val mSampleDuration = 1.15 // seconds
+    private val mSampleDuration = 2.4 // seconds
     private val mSampleBufferSize = (mSamplingRate * mSampleDuration).toInt()
     private var mState = ReceiverState.INIT
 
-    private val mThreshold = 0.1
+    private val mThreshold = 1.0
     private val mPreambleThreshold = 1.0
     private val mPayloadSize = 8  // characters
 
-    // Both are in seconds
-    private val mToneLengthMultiplier = 2
-    private val mGuardLengthMultiplier = 4
-
     // Normalizer variables
-    val mNormalizerDBLevel = Math.pow(10.0, -1.0 / 20.0).toFloat()
-    var mNormalizerMax = 0
-    var mNormalizerMin = 0
-    var mNormalizerAlignment = 0
-    var mNormalizerCount = 1
+    private val mNormalizerDBLevel = Math.pow(10.0, -1.0 / 20.0).toFloat()
+    private var mNormalizerMax = 0
+    private var mNormalizerMin = 0
+    private var mNormalizerAlignment = 0
+    private var mNormalizerCount = 1
 
     /**
      * Give the thread high priority so that it's not canceled unexpectedly, and start it
@@ -151,16 +147,14 @@ class PollInOneToAReceiver(
                 System.arraycopy(rawSampleBuffer, 0, sampleBuffer, mSampleBufferSize, mSampleBufferSize)
 
                 if (mState == ReceiverState.PARSE_DATA) {
-                    thread {
-                        val result = parseData(sampleBuffer)
-                        if (result != null) {
-                            mCbSuccess(result)
-                            mState = ReceiverState.RECEIVE_DONE
-                            close()
-                        } else {
-                            mState = ReceiverState.LISTEN
-                            mCbStateUpdate(mState)
-                        }
+                    val result = parseData(sampleBuffer)
+                    if (result != null) {
+                        mCbSuccess(result)
+                        mState = ReceiverState.RECEIVE_DONE
+                        close()
+                    } else {
+                        mState = ReceiverState.LISTEN
+                        mCbStateUpdate(mState)
                     }
                 } else {
                     close()
@@ -262,14 +256,22 @@ class PollInOneToAReceiver(
             }
         }
 
-        Log.i("AudioDTMFReceiver [$mState]", "Peak RESULT===>: $peakTop, $peakBottom")
+        //Log.i("AudioDTMFReceiver [$mState]", "Peak RESULT===>: $peakTop, $peakBottom")
+
         if (peakTop != null && peakBottom != null) {
             if (TONEMAP_TOP[peakTop.first] == TONEMAP_BOTTOM[peakBottom.first])
                 return peakTop
             else
                 return null
         } else {
-            return peakTop
+            if (peakTop != null) {
+                return peakTop
+            } else if (peakBottom != null) {
+                val char = TONEMAP_BOTTOM[peakBottom.first]
+                return Pair(ToneMap.revTop[char]!!, peakBottom.second)
+            } else {
+                return null
+            }
         }
     }
 
@@ -316,7 +318,9 @@ class PollInOneToAReceiver(
         // Try to parse out data after the preamble chunk
         var dataIdx = preambleChunkIdx
         var flagPreamble = true
-        var flagSecondTry = false
+        var flagDelayFound = false
+        var delayCount = 0
+        val delayCountThreshold = 2
 
         val dataList = ArrayList<String>()
         while (dataIdx < sampleBuffer.size) {
@@ -332,10 +336,17 @@ class PollInOneToAReceiver(
             fft.complexForward(fftBuffer)
 
             val peak = searchPeaks(fftBuffer, flagPreamble)
-            Log.i("AudioDTMFReceiver [$mState]", "$peak")
+            //Log.i("AudioDTMFReceiver [$mState]", "$peak")
             if (flagPreamble) {
                 if (peak == null) {
                     flagPreamble = false
+                    flagDelayFound = true
+                } else if (peak.first != ToneMap.topPreambleFreq) {
+                    flagPreamble = false
+                    flagDelayFound = false
+                    val dataChar = TONEMAP_TOP[peak.first]!!
+                    dataList.add(dataChar)
+                    Log.i("AudioDTMFReceiver [$mState]", "Detected bit: $dataChar (total: ${dataList.size})")
                 }
             } else {
                 // If the preamble is seen again, flush existing data and start again
@@ -343,47 +354,46 @@ class PollInOneToAReceiver(
                         peak?.first == ToneMap.topPreambleFreq) {
                     Log.i("AudioDTMFReceiver [$mState]", "Detected Preamble!!: clean buffer and start again")
                     flagPreamble = true
+                    flagDelayFound = false
                     dataList.clear()
                     continue
                 }
 
-                // Handle this as an error case
-                if (peak == null) {
-                    if (flagSecondTry) {
-                        val fillChar = mRandom.nextInt(16).toString(16)
-                        dataList.add(fillChar)
-
-                        Log.i("AudioDTMFReceiver [$mState]", "Detection failure: $fillChar (total: ${dataList.size})")
-
-                        dataIdx += (mGuardLengthMultiplier - 1) * mParseChunkSize
-                        flagSecondTry = false
-                    } else {
-                        dataIdx += mParseChunkSize
-                        flagSecondTry = true
+                if (flagDelayFound) {
+                    if (peak != null) {
+                        flagDelayFound = false
+                        val dataChar = TONEMAP_TOP[peak.first]!!
+                        dataList.add(dataChar)
+                        Log.i("AudioDTMFReceiver [$mState]", "Detected bit: $dataChar (total: ${dataList.size})")
                     }
                 } else {
-                    val dataChar = TONEMAP_TOP[peak.first]!!
-
-                    if (dataList.isNotEmpty() && dataChar == dataList.last() && peak.second < 1.0) {
-                        dataIdx += mParseChunkSize / 2
-                        continue
+                    if (peak == null) {
+                        delayCount++
+                        if (delayCount > delayCountThreshold) {
+                            flagDelayFound = true
+                            Log.i("AudioDTMFReceiver [$mState]", "Detected silence (total: ${dataList.size})")
+                        }
+                    } else {
+                        val dataChar = TONEMAP_TOP[peak.first]!!
+                        if (dataList.isNotEmpty() && dataList.last() != dataChar) {
+                            val dataChar = TONEMAP_TOP[peak.first]!!
+                            dataList.add(dataChar)
+                            Log.i("AudioDTMFReceiver [$mState]", "Detected bit [D]: $dataChar (total: ${dataList.size})")
+                        } else {
+                            delayCount = 0
+                        }
                     }
-
-                    dataList.add(dataChar)
-                    Log.i("AudioDTMFReceiver [$mState]", "Detected bit: $dataChar (total: ${dataList.size})")
-                    dataIdx += (mToneLengthMultiplier - 1) * mParseChunkSize
-                    dataIdx += mGuardLengthMultiplier * mParseChunkSize
-                    flagSecondTry = false
                 }
 
                 if (dataList.size >= mPayloadSize) {
-                    return applyReedSolomon(dataList)
+                    val ret = applyReedSolomon(dataList)
+                    if (ret != null)
+                        return ret
+                    dataList.clear()
                 }
-
-                continue
             }
 
-            dataIdx += mParseChunkSize
+            dataIdx += (mParseChunkSize / 2)
         }
 
         return null
