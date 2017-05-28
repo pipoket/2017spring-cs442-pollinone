@@ -96,8 +96,9 @@ class CreatingPoll : AppCompatActivity() {
             finish()
         }.doOnError {
             Toast.makeText(applicationContext, "Failed communication with server", Toast.LENGTH_LONG).show()
-        }.subscribe {
+        }.onErrorReturn {
 
+        }.subscribe {
         }
 
     }

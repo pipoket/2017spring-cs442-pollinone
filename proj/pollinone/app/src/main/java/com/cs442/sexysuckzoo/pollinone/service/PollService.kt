@@ -1,6 +1,7 @@
 package com.cs442.sexysuckzoo.pollinone.service
 
 import com.cs442.sexysuckzoo.pollinone.model.Vote
+import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.rx.rx_object
 import rx.Observable
@@ -16,5 +17,12 @@ class PollService {
     fun createPoll(title: String, itemCount: Int = 2): Observable<Vote> {
         val param = listOf("title" to title, "itemCount" to itemCount)
         return "/Vote/createVote".httpPost(param).rx_object(Vote.Deserializer())
+    }
+
+    fun startPoll(id: Int, rootCredential: String): Observable<Vote> {
+        val param = listOf("rootCredential" to rootCredential)
+        return "/Vote/start/$id"
+                .httpGet(param)
+                .rx_object(Vote.Deserializer())
     }
 }
