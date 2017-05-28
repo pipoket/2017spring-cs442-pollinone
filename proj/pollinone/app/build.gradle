@@ -37,6 +37,7 @@ dependencies {
     compile "com.github.kittinunf.fuel:fuel-android:1.5.0"
     compile "com.github.kittinunf.fuel:fuel-rxjava:1.5.0"
     compile "com.google.code.gson:gson:2.8.0"
+    compile 'com.github.wendykierp:JTransforms:3.1'
 }
 repositories {
     mavenCentral()
