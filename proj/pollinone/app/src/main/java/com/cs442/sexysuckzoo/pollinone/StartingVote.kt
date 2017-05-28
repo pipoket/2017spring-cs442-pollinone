@@ -85,7 +85,6 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
             }.doOnError {
                 Toast.makeText(applicationContext, "failed http communication", Toast.LENGTH_LONG).show()
             }.onErrorReturn {
-
             }.subscribe {
 
             }

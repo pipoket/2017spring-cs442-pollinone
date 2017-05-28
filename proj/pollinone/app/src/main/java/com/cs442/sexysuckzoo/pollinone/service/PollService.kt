@@ -25,4 +25,11 @@ class PollService {
                 .httpGet(param)
                 .rx_object(Vote.Deserializer())
     }
+
+    fun collectPoll(id: Int, rootCredential: String): Observable<Vote> {
+        val param = listOf("rootCredential" to rootCredential)
+        return "/Vote/collect/$id"
+                .httpGet(param)
+                .rx_object(Vote.Deserializer())
+    }
 }
