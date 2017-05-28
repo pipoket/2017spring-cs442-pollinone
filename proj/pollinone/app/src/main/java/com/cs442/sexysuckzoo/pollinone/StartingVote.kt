@@ -9,6 +9,10 @@ import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import com.cs442.sexysuckzoo.pollinone.model.Vote
+import com.cs442.sexysuckzoo.pollinone.service.PollService
+import com.cs442.sexysuckzoo.pollinone.service.StorageService
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.messages.Message
 import com.google.android.gms.common.api.GoogleApiClient
@@ -22,6 +26,7 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mActiveMessage: Message? = null
 
+    //@TODO: provide proper room id
     private var roomId = "Vote #1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,10 +75,21 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     // Button callback
     fun startVote(v: View) {
-        val intent = Intent(applicationContext, VotingHost::class.java)
-        startActivity(intent)
+        val vote = StorageService.instance.vote
+        vote?.let {
+            PollService.instance.startPoll(vote.id, vote.rootCredential).map {
+                StorageService.instance.vote = it
+                val intent = Intent(applicationContext, VotingHost::class.java)
+                startActivity(intent)
+                finish()
+            }.doOnError {
+                Toast.makeText(applicationContext, "failed http communication", Toast.LENGTH_LONG).show()
+            }.onErrorReturn {
 
-        finish()
+            }.subscribe {
+
+            }
+        }
     }
 
     private fun publish(message: String) {
