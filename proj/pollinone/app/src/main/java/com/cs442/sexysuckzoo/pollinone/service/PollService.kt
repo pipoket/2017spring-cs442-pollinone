@@ -3,6 +3,7 @@ package com.cs442.sexysuckzoo.pollinone.service
 import com.cs442.sexysuckzoo.pollinone.model.Vote
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.fuel.rx.rx_string
 import com.github.kittinunf.fuel.rx.rx_object
 import rx.Observable
 
@@ -31,5 +32,12 @@ class PollService {
         return "/Vote/collect/$id"
                 .httpGet(param)
                 .rx_object(Vote.Deserializer())
+    }
+
+    fun closePoll(id: Int, rootCredential: String): Observable<String> {
+        val param = listOf("rootCredential" to rootCredential)
+        return "/Vote/close/$id"
+                .httpGet(param)
+                .rx_string()
     }
 }
