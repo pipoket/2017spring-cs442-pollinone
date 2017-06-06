@@ -34,21 +34,33 @@
 
             </LinearLayout>
         </ScrollView>
+
         <LinearLayout
-            android:layout_below="@id/scrollview_entrees"
-            android:layout_alignParentBottom="@id/title_entrees"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="@id/title_entrees"
+            android:layout_below="@id/scrollview_entrees"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_publish"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="publish"
+                android:text="publish"
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/button_start_vote"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="startVote"
                 android:text="Start Vote"
                 android:textSize="30sp"
-                android:textStyle="bold"
-                android:onClick="startVote"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 

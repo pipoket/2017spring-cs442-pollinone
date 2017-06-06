@@ -100,7 +100,6 @@ class CreatingPoll : AppCompatActivity() {
 
         }.subscribe {
         }
-
     }
 }
 

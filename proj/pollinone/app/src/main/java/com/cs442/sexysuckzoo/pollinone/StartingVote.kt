@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.annotation.NonNull
 import android.support.v4.app.FragmentActivity
 import android.util.Log
 import android.view.View
@@ -14,17 +15,23 @@ import com.cs442.sexysuckzoo.pollinone.model.Vote
 import com.cs442.sexysuckzoo.pollinone.service.PollService
 import com.cs442.sexysuckzoo.pollinone.service.StorageService
 import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.messages.Message
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.nearby.messages.MessageListener
+import com.google.android.gms.common.api.ResultCallback
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.nearby.messages.*
 import org.json.JSONObject
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_start_vote.*
 
 
 class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
     private val entries = ArrayList<String>()
     private var mGoogleApiClient: GoogleApiClient? = null
-    private var mActiveMessage: Message? = null
+
+    // a message to publish
+    private var mPubMessage: Message? = null
+
 
     //@TODO: provide proper room id
     private var roomId = "Vote #1"
@@ -33,6 +40,9 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start_vote)
 
+        if (mGoogleApiClient != null) {
+            return
+        }
         mGoogleApiClient = GoogleApiClient.Builder(this)
                 .addApi(Nearby.MESSAGES_API)
                 .addConnectionCallbacks(this)
@@ -91,17 +101,55 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         }
     }
 
+    // Button callback
+    fun publish(v:View) {
+        var json : JSONObject? = JSONObject()
+        json?.put("roomId", roomId)
+        publish(json?.toString() as String)
+    }
+
+    private val TTL_IN_SECONDS = 3 * 60 // Three minutes.
+    private val PUB_SUB_STRATEGY = Strategy.Builder()
+            .setTtlSeconds(TTL_IN_SECONDS).build()
+
     private fun publish(message: String) {
-        Log.i("StartVote", "Publishing message: " + message)
-        mActiveMessage = Message(message.toByteArray())
-        Nearby.Messages.publish(mGoogleApiClient, mActiveMessage)
+        var TAG :String = "StartVote"
+
+        val options = PublishOptions.Builder()
+                .setStrategy(PUB_SUB_STRATEGY)
+                .setCallback(object : PublishCallback() {
+                    override fun onExpired() {
+                        super.onExpired()
+                        Log.i(TAG, "No longer publishing")
+                    }
+                }).build()
+
+        if (mPubMessage != null)
+        {
+            unpublish()
+        }
+        if (mGoogleApiClient == null)
+            return
+
+        mPubMessage = DeviceMessage.newNearbyMessage(message)
+
+        Log.i(TAG, "Publishing")
+
+        Nearby.Messages.publish(mGoogleApiClient, mPubMessage, options)
+                .setResultCallback { status ->
+                    if (status.isSuccess) {
+                        Log.i(TAG, "Published successfully.")
+                    } else {
+                        Log.i(TAG, "Published failed.")
+                    }
+                }
     }
 
     private fun unpublish() {
         Log.i("StartVote", "Unpublishing.")
-        if (mActiveMessage != null) {
-            Nearby.Messages.unpublish(mGoogleApiClient, mActiveMessage)
-            mActiveMessage = null
+        if (mPubMessage != null) {
+            Nearby.Messages.unpublish(mGoogleApiClient, mPubMessage)
+            mPubMessage = null
         }
     }
 
@@ -120,4 +168,7 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     override fun onConnectionSuspended(var1: Int) {}
+
+
+
 }

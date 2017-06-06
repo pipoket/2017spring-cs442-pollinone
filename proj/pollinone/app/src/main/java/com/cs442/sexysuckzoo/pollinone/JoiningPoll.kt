@@ -3,6 +3,8 @@ package com.cs442.sexysuckzoo.pollinone
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.annotation.NonNull
+import android.support.v4.app.FragmentActivity
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -13,11 +15,12 @@ import com.cs442.sexysuckzoo.pollinone.service.PollService
 import com.cs442.sexysuckzoo.pollinone.service.StorageService
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.ResultCallback
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.messages.Message
-import com.google.android.gms.nearby.messages.MessageListener
-import com.google.android.gms.nearby.messages.SubscribeOptions
+import com.google.android.gms.nearby.messages.*
 import org.json.JSONObject
+
 
 class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks  {
     private var mLinearLayout : LinearLayout? = null
@@ -42,15 +45,15 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
         mMessageListener = object : MessageListener()
         {
             override fun onFound(message: Message) {
-                val messageAsString = String(message.content)
-                val json : JSONObject? = JSONObject(messageAsString)
+                var messageAsString = DeviceMessage.fromNearbyMessage(message).getMessageBody()
+                var json : JSONObject? = JSONObject(messageAsString)
 
                 if (json?.has("roomKey") as Boolean) {
                     // mPollList.add(json.getString("roomKey"))
                     val key = json.getString("roomKey")
                     PollService.instance.fetchPoll(key).map {
                         mPollList.add(it)
-                        refreshUI()
+                        runOnUiThread { refreshUI() }
                     }.doOnError {
 
                     }.onErrorReturn {
@@ -63,7 +66,7 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
             }
 
             override fun onLost(message: Message) {
-                val messageAsString = String(message.content)
+                var messageAsString = DeviceMessage.fromNearbyMessage(message).getMessageBody()
                 val json : JSONObject? = JSONObject(messageAsString)
                 if (json?.has("roomKey") as Boolean) {
                     val key = json.getString("roomKey")
@@ -71,7 +74,7 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
                         it.key == key
                     }
                     // mPollList.remove(json.getString("roomId"))
-                    refreshUI()
+                    runOnUiThread { refreshUI() }
                 }
 
                 Log.d("JoiningPoll", "Lost sight of message: " + messageAsString);
@@ -142,10 +145,35 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
     }
     override fun onConnectionSuspended(var1: Int) {}
 
+    private val TTL_IN_SECONDS = 3 * 60 // Three minutes.
+    private val PUB_SUB_STRATEGY = Strategy.Builder()
+            .setTtlSeconds(TTL_IN_SECONDS).build()
+
     // Subscribe to receive messages.
     private fun subscribe() {
         Log.i("JoiningPoll", "Subscribing.")
-        Nearby.Messages.subscribe(mGoogleApiClient, mMessageListener, SubscribeOptions.DEFAULT)
+        val options = SubscribeOptions.Builder()
+                .setStrategy(PUB_SUB_STRATEGY)
+                .setCallback(object : SubscribeCallback() {
+                    override fun onExpired() {
+                        super.onExpired()
+                        Log.i("tag", "No longer subscribing")
+//                        runOnUiThread { mSubscribeSwitch.setChecked(false) }
+                    }
+                }).build()
+
+        Nearby.Messages.subscribe(mGoogleApiClient, mMessageListener, options)
+                .setResultCallback(object: ResultCallback<Status> {
+               override fun onResult(@NonNull status:Status) {
+                if (status.isSuccess()) {
+                    Log.i("tag", "Subscribed successfully.");
+                } else {
+                    Log.i("tag", "Subscribed Failed")
+                    Log.i("tag", status.toString());
+                }
+            }
+        });
+
     }
 
     private fun unsubscribe() {
