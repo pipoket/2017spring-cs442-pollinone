@@ -102,6 +102,7 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
         val vote = mPollList[idx]
         PollService.instance.joinPoll(vote.id, vote.key).map {
             StorageService.instance.member = it
+            StorageService.instance.vote = vote
             val intent = Intent(applicationContext, WaitingVoteToStart::class.java)
             startActivity(intent)
             finish()

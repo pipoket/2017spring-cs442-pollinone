@@ -54,4 +54,10 @@ class PollService {
                 .httpGet(param)
                 .rx_object(Member.Deserializer())
     }
+
+    fun isPollStarted(id: Int): Observable<String> {
+        return "/Vote/isStarted/$id"
+                .httpGet()
+                .rx_string()
+    }
 }
