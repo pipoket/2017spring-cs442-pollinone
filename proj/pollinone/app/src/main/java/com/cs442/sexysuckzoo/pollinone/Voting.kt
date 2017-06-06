@@ -4,10 +4,15 @@ import android.content.Context
 import android.hardware.SensorManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import com.cs442.sexysuckzoo.pollinone.service.PollService
+import com.cs442.sexysuckzoo.pollinone.service.StorageService
 import kotlinx.android.synthetic.main.activity_voting.*
 
 
 class Voting : AppCompatActivity() {
+    val TAG = "Voting"
     private lateinit var mSensorManager: SensorManager
     private lateinit var mVoteMotionDetector: VoteMotionDetector
 
@@ -20,6 +25,13 @@ class Voting : AppCompatActivity() {
                 this::onHandUpDetected,
                 this::onHandDownDetected
         )
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                vote()
+            } else {
+                withdraw()
+            }
+        }
     }
 
     override fun onResume() {
@@ -32,15 +44,54 @@ class Voting : AppCompatActivity() {
         mVoteMotionDetector.stopDetection()
     }
 
+    fun refreshUI() {
+        // @TODO: Feedback to user which selection has been chosen
+    }
+
+    fun vote() {
+        val voteId = StorageService.instance.vote?.id as Int
+        val credential = StorageService.instance.member?.credential as String
+        PollService.instance.vote(voteId, credential).map {
+            StorageService.instance.member?.item = it.item
+            refreshUI()
+        }.doOnError {
+            Log.wtf(TAG, it.message)
+            Toast.makeText(applicationContext, "Failed voting", Toast.LENGTH_LONG).show()
+            toggleButton.toggle()
+        }.onErrorReturn {
+
+        }.subscribe {
+
+        }
+    }
+
+    fun withdraw() {
+        val voteId = StorageService.instance.vote?.id as Int
+        val credential = StorageService.instance.member?.credential as String
+        PollService.instance.withdraw(voteId, credential).map {
+            StorageService.instance.member?.item = null
+            refreshUI()
+        }.doOnError {
+            Toast.makeText(applicationContext, "Failed withdrawing", Toast.LENGTH_LONG).show()
+            toggleButton.toggle()
+        }.onErrorReturn {
+
+        }.subscribe {
+
+        }
+    }
+
     fun onHandUpDetected() {
         if (!toggleButton.isChecked) {
             toggleButton.toggle()
+            vote()
         }
     }
 
     fun onHandDownDetected() {
         if (toggleButton.isChecked) {
             toggleButton.toggle()
+            withdraw()
         }
     }
 }
