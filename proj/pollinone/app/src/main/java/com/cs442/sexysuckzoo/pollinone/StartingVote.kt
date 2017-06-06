@@ -34,12 +34,13 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
 
     //@TODO: provide proper room id
-    private var roomId = "Vote #1"
+    private var roomId : String? = "Vote #1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start_vote)
 
+        roomId = StorageService.instance.vote?.key
         if (mGoogleApiClient != null) {
             return
         }
@@ -104,7 +105,7 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     // Button callback
     fun publish(v:View) {
         var json : JSONObject? = JSONObject()
-        json?.put("roomId", roomId)
+        json?.put("roomKey", roomId)
         publish(json?.toString() as String)
     }
 
@@ -163,7 +164,7 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     override fun onConnected(var1: Bundle?) {
         var json : JSONObject? = JSONObject()
-        json?.put("roomId", roomId)
+        json?.put("roomKey", roomId)
         publish(json?.toString() as String)
     }
 
