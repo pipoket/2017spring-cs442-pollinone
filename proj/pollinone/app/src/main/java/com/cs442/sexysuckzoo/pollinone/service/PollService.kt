@@ -75,13 +75,10 @@ class PollService {
                 .rx_object(Member.Deserializer())
     }
 
-    fun withdraw(voteId: Int, credential: String): Observable<JsonObject> {
+    fun withdraw(voteId: Int, credential: String): Observable<Member> {
         val param = listOf("credential" to credential)
         return "/Members/vote/$voteId"
                 .httpDelete(param)
-                .rx_string()
-                .map {
-                    JsonParser().parse(it).asJsonObject
-                }
+                .rx_object(Member.Deserializer())
     }
 }

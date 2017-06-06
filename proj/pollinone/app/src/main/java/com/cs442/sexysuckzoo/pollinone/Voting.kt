@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.cs442.sexysuckzoo.pollinone.model.Member
 import com.cs442.sexysuckzoo.pollinone.service.PollService
 import com.cs442.sexysuckzoo.pollinone.service.StorageService
 import kotlinx.android.synthetic.main.activity_voting.*
@@ -44,16 +45,16 @@ class Voting : AppCompatActivity() {
         mVoteMotionDetector.stopDetection()
     }
 
-    fun refreshUI() {
+    fun refreshUI(member: Member) {
         // @TODO: Feedback to user which selection has been chosen
+        StorageService.instance.member?.item = member.item
     }
 
     fun vote() {
         val voteId = StorageService.instance.vote?.id as Int
         val credential = StorageService.instance.member?.credential as String
         PollService.instance.vote(voteId, credential).map {
-            StorageService.instance.member?.item = it.item
-            refreshUI()
+            refreshUI(it)
         }.doOnError {
             Log.wtf(TAG, it.message)
             Toast.makeText(applicationContext, "Failed voting", Toast.LENGTH_LONG).show()
@@ -69,8 +70,7 @@ class Voting : AppCompatActivity() {
         val voteId = StorageService.instance.vote?.id as Int
         val credential = StorageService.instance.member?.credential as String
         PollService.instance.withdraw(voteId, credential).map {
-            StorageService.instance.member?.item = null
-            refreshUI()
+            refreshUI(it)
         }.doOnError {
             Toast.makeText(applicationContext, "Failed withdrawing", Toast.LENGTH_LONG).show()
             toggleButton.toggle()
