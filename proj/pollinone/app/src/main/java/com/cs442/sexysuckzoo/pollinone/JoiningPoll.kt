@@ -8,6 +8,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
+import com.cs442.sexysuckzoo.pollinone.model.Vote
+import com.cs442.sexysuckzoo.pollinone.service.PollService
+import com.cs442.sexysuckzoo.pollinone.service.StorageService
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.nearby.Nearby
@@ -18,7 +21,7 @@ import org.json.JSONObject
 
 class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks  {
     private var mLinearLayout : LinearLayout? = null
-    private var mPollList = ArrayList<String>()
+    private var mPollList = ArrayList<Vote>()
 
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mMessageListener: MessageListener? = null
@@ -39,27 +42,44 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
         mMessageListener = object : MessageListener()
         {
             override fun onFound(message: Message) {
-                var messageAsString = String(message.getContent());
-                var json : JSONObject? = JSONObject(messageAsString)
+                val messageAsString = String(message.content)
+                val json : JSONObject? = JSONObject(messageAsString)
 
-                if (json?.has("roomId") as Boolean) {
-                    mPollList.add(json?.getString("roomId"))
-                    refreshUI()
+                if (json?.has("roomKey") as Boolean) {
+                    // mPollList.add(json.getString("roomKey"))
+                    val key = json.getString("roomKey")
+                    PollService.instance.fetchPoll(key).map {
+                        mPollList.add(it)
+                        refreshUI()
+                    }.doOnError {
+
+                    }.onErrorReturn {
+
+                    }.subscribe {
+
+                    }
                 }
-                Log.d("JoiningPoll", "Found message: " + messageAsString);
+                Log.d("JoiningPoll", "Found message: " + messageAsString)
             }
 
             override fun onLost(message: Message) {
-                var messageAsString = String(message.getContent());
-                var json : JSONObject? = JSONObject(messageAsString)
-                if (json?.has("roomId") as Boolean) {
-                    mPollList.remove(json?.getString("roomId"))
+                val messageAsString = String(message.content)
+                val json : JSONObject? = JSONObject(messageAsString)
+                if (json?.has("roomKey") as Boolean) {
+                    val key = json.getString("roomKey")
+                    mPollList.removeIf {
+                        it.key == key
+                    }
+                    // mPollList.remove(json.getString("roomId"))
                     refreshUI()
                 }
 
                 Log.d("JoiningPoll", "Lost sight of message: " + messageAsString);
             }
         }
+
+        // mock
+        mPollList.add(Vote(16, "HelloWorld", "y9", null, null, null, null))
         refreshUI()
     }
 
@@ -69,8 +89,8 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
     }
 
     override fun onStop() {
-        unsubscribe()
-        if (mGoogleApiClient?.isConnected() as Boolean) {
+        if (mGoogleApiClient?.isConnected as Boolean) {
+            unsubscribe()
             mGoogleApiClient?.disconnect()
         }
         super.onStop()
@@ -78,24 +98,35 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
 
 
     fun joiningPoll(v: View) {
-        var idx = Integer.parseInt(v.tag as String)
-        var roomId = mPollList[idx]
-        // TODO : send message to joining the room.
-        // TODO : Send an joining request to server
-        if (v.tag === "1") {
+        val idx = v.tag as Int
+        val vote = mPollList[idx]
+        PollService.instance.joinPoll(vote.id, vote.key).map {
+            StorageService.instance.member = it
             val intent = Intent(applicationContext, WaitingVoteToStart::class.java)
             startActivity(intent)
+            finish()
+        }.doOnError {
+
+        }.onErrorReturn {
+
+        }.subscribe {
+
         }
+        // TODO : send message to joining the room.
+        // TODO : Send an joining request to server
+        // if (v.tag === "1") {
+        //     val intent = Intent(applicationContext, WaitingVoteToStart::class.java)
+        //     startActivity(intent)
+        // }
     }
 
     private fun refreshUI() {
         mLinearLayout?.removeAllViews()
-        var idx = 0;
-        for (str in mPollList)
+        for ((idx, vote) in mPollList.withIndex())
         {
             // set joining poll information
             val b = Button(applicationContext)
-            b.text = str
+            b.text = vote.title
             b.tag = idx
             b.setOnClickListener { v -> joiningPoll(v) }
             mLinearLayout?.addView(b)
