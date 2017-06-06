@@ -26,7 +26,7 @@ class VotingResult : AppCompatActivity() {
 
         val vote = StorageService.instance.vote
         vote?.let {
-            PollService.instance.closePoll(vote.id, vote.rootCredential).map {
+            PollService.instance.closePoll(vote.id, vote.rootCredential as String).map {
                 val result: JsonArray = JsonParser().parse(it).getAsJsonArray()
                 for (i in 0..(result.size()-1)) {
                     val choice = i+1

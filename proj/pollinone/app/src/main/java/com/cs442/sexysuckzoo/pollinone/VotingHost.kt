@@ -33,14 +33,14 @@ class VotingHost : AppCompatActivity() {
     fun onNextButtonClick(v: View) {
         val vote = StorageService.instance.vote
         vote?.let {
-            PollService.instance.collectPoll(vote.id, vote.rootCredential).map{
+            PollService.instance.collectPoll(vote.id, vote.rootCredential as String).map{
                 StorageService.instance.vote = it
                 if (it.status == "finished") {
                     val intent = Intent(applicationContext, VotingResult::class.java)
                     startActivity(intent)
                     finish()
                 } else {
-                    val currentItem = it.currentItem + 1
+                    val currentItem = it.currentItem as Int + 1
                     textViewChoice.text = "Choice #$currentItem"
                 }
             }.doOnError {

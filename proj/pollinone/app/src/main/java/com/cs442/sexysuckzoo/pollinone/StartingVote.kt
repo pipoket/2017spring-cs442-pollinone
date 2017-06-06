@@ -77,7 +77,7 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     fun startVote(v: View) {
         val vote = StorageService.instance.vote
         vote?.let {
-            PollService.instance.startPoll(vote.id, vote.rootCredential).map {
+            PollService.instance.startPoll(vote.id, vote.rootCredential as String).map {
                 StorageService.instance.vote = it
                 val intent = Intent(applicationContext, VotingHost::class.java)
                 startActivity(intent)
