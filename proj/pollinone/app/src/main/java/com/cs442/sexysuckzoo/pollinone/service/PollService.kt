@@ -1,5 +1,6 @@
 package com.cs442.sexysuckzoo.pollinone.service
 
+import com.cs442.sexysuckzoo.pollinone.model.Member
 import com.cs442.sexysuckzoo.pollinone.model.Vote
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
@@ -39,5 +40,18 @@ class PollService {
         return "/Vote/close/$id"
                 .httpGet(param)
                 .rx_string()
+    }
+
+    fun fetchPoll(key: String): Observable<Vote> {
+        return "/Vote/fetch/$key"
+                .httpGet()
+                .rx_object(Vote.Deserializer())
+    }
+
+    fun joinPoll(id: Int, key: String): Observable<Member> {
+        val param = listOf("key" to key)
+        return "/Vote/join/$id"
+                .httpGet(param)
+                .rx_object(Member.Deserializer())
     }
 }
