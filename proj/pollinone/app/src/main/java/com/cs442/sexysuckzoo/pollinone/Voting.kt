@@ -4,9 +4,11 @@ import android.content.Context
 import android.hardware.SensorManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Vibrator;
 import android.util.Log
 import android.widget.Toast
 import com.cs442.sexysuckzoo.pollinone.model.Member
+
 import com.cs442.sexysuckzoo.pollinone.service.PollService
 import com.cs442.sexysuckzoo.pollinone.service.StorageService
 import kotlinx.android.synthetic.main.activity_voting.*
@@ -55,6 +57,9 @@ class Voting : AppCompatActivity() {
         val credential = StorageService.instance.member?.credential as String
         PollService.instance.vote(voteId, credential).map {
             refreshUI(it)
+
+            val v = getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            v.vibrate(500)
         }.doOnError {
             Log.wtf(TAG, it.message)
             Toast.makeText(applicationContext, "Failed voting", Toast.LENGTH_LONG).show()
