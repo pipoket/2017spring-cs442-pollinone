@@ -9,16 +9,22 @@ import android.util.Log
 import android.widget.Toast
 import android.widget.ToggleButton
 import com.cs442.sexysuckzoo.pollinone.model.Member
+import com.cs442.sexysuckzoo.pollinone.model.Vote
 
 import com.cs442.sexysuckzoo.pollinone.service.PollService
 import com.cs442.sexysuckzoo.pollinone.service.StorageService
 import kotlinx.android.synthetic.main.activity_voting.*
+import rx.Observable
+import rx.Subscription
+import java.util.concurrent.TimeUnit
 
 
 class Voting : AppCompatActivity() {
     val TAG = "Voting"
     private lateinit var mSensorManager: SensorManager
     private lateinit var mVoteMotionDetector: VoteMotionDetector
+
+    var subscription: Subscription? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,11 +55,36 @@ class Voting : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mVoteMotionDetector.startDetection()
+        var vote: Vote? = null
+        val member = StorageService.instance.member!!
+
+        subscription = Observable.interval(1, TimeUnit.SECONDS).switchMap {
+            vote = StorageService.instance.vote!!
+            PollService.instance.fetchPoll(vote!!.id, member.credential)
+        }.map {
+            if (it.status != "voting") {
+                finish()
+            }
+            else if (it.currentItem != vote!!.currentItem) {
+                StorageService.instance.vote = it
+                toggleButton.isChecked = false
+                val choice = it.currentItem!! + 1
+                currentChoiceTextView.text = "Choice #$choice"
+            }
+        }.subscribe {
+
+        }
     }
 
     override fun onPause() {
         super.onPause()
         mVoteMotionDetector.stopDetection()
+        subscription?.let {
+            if (!it.isUnsubscribed) {
+                it.unsubscribe()
+            }
+        }
+        subscription = null
     }
 
     fun refreshUI(member: Member) {

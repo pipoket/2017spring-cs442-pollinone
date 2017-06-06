@@ -4,12 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/activity_voting_host"
     tools:context="com.cs442.sexysuckzoo.pollinone.VotingHost">
 
     <RelativeLayout
         android:layout_width="368dp"
         android:layout_height="495dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@+id/activity_voting_host"
+        app:layout_constraintBottom_toBottomOf="@+id/activity_voting_host"
+        app:layout_constraintLeft_toLeftOf="@+id/activity_voting_host"
+        app:layout_constraintRight_toRightOf="@+id/activity_voting_host">
 
         <TextView
             android:id="@+id/textViewCountingTitle"
@@ -38,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:fontFamily="sans-serif"
-            android:text="Choice#1\n부먹"
+            android:text="Choice #1"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="40sp" />

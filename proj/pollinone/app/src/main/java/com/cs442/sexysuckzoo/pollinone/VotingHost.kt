@@ -9,6 +9,9 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_voting_host.*
 import com.cs442.sexysuckzoo.pollinone.service.PollService
 import com.cs442.sexysuckzoo.pollinone.service.StorageService
+import rx.Observable
+import rx.Subscription
+import java.util.concurrent.TimeUnit
 
 class VotingHost : AppCompatActivity() {
     internal var mButtonNext: Button? = null
@@ -16,6 +19,7 @@ class VotingHost : AppCompatActivity() {
     internal var mTextViewCount: TextView? = null
 
     internal var mIsEndOfChoice = false
+    internal var subscription: Subscription? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,10 +28,34 @@ class VotingHost : AppCompatActivity() {
         mButtonNext = findViewById(R.id.nextButton) as Button
         mTextViewChoiceName = findViewById(R.id.textViewChoice) as TextView // Choice #x\n Blah Blah Blah
         mTextViewCount = findViewById(R.id.textViewCount) as TextView // 10, 투표 한 사람 숫자
+    }
 
-        if (mIsEndOfChoice) {
-            mButtonNext!!.text = "Finish"
+    override fun onResume() {
+        super.onResume()
+        subscription = StorageService.instance.vote?.let {
+            val vote = it
+            Observable.interval(1, TimeUnit.SECONDS).switchMap {
+                PollService.instance.count(vote.id, vote.rootCredential!!)
+            }.map {
+                mTextViewCount?.text = it.toString()
+            }.doOnError{
+
+            }.onErrorReturn {
+
+            }.subscribe {
+
+            }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        subscription?.let {
+            if (!it.isUnsubscribed) {
+                it.unsubscribe()
+            }
+        }
+        subscription = null
     }
 
     fun onNextButtonClick(v: View) {
@@ -42,6 +70,10 @@ class VotingHost : AppCompatActivity() {
                 } else {
                     val currentItem = it.currentItem as Int + 1
                     textViewChoice.text = "Choice #$currentItem"
+                    mTextViewCount?.text = "0"
+                    if (currentItem == vote.itemCount) {
+                        mButtonNext!!.text = "Finish"
+                    }
                 }
             }.doOnError {
 

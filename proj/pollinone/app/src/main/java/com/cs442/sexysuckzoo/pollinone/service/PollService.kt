@@ -49,9 +49,27 @@ class PollService {
                 }
     }
 
+    fun count(id: Int, rootCredential: String): Observable<Int> {
+        val param = listOf("rootCredential" to rootCredential)
+        return "/Vote/countVoter/$id"
+                .httpGet(param)
+                .rx_string()
+                .map {
+                    JsonParser().parse(it).asInt
+                }
+    }
+
     fun fetchPoll(key: String): Observable<Vote> {
-        return "/Vote/fetch/$key"
+        val param = listOf("key" to key)
+        return "/Vote/fetch"
                 .httpGet()
+                .rx_object(Vote.Deserializer())
+    }
+
+    fun fetchPoll(id: Int, credential: String): Observable<Vote> {
+        val param = listOf("credential" to credential)
+        return "/Vote/fetch/$id"
+                .httpGet(param)
                 .rx_object(Vote.Deserializer())
     }
 
