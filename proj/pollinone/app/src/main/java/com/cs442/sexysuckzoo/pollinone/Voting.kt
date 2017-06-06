@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Vibrator;
 import android.util.Log
 import android.widget.Toast
+import android.widget.ToggleButton
 import com.cs442.sexysuckzoo.pollinone.model.Member
 
 import com.cs442.sexysuckzoo.pollinone.service.PollService
@@ -28,7 +29,15 @@ class Voting : AppCompatActivity() {
                 this::onHandUpDetected,
                 this::onHandDownDetected
         )
-        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+        // toggleButton.setOnCheckedChangeListener { _, isChecked ->
+        //     if (isChecked) {
+        //         vote()
+        //     } else {
+        //         withdraw()
+        //     }
+        // }
+        toggleButton.setOnClickListener { v ->
+            val isChecked = (v as ToggleButton).isChecked
             if (isChecked) {
                 vote()
             } else {
