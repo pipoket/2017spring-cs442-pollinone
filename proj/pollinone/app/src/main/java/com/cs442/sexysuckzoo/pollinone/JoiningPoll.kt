@@ -115,11 +115,13 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
                     }
                 },
                 { errorCode ->
-                    runOnUiThread {
-                        Toast.makeText(
-                                applicationContext,
-                                "Failed to broadcast with sound: $errorCode",
-                                Toast.LENGTH_LONG).show()
+                    if (errorCode != PollInOneToAReceiver.ErrorCode.USER_CANCELED) {
+                        runOnUiThread {
+                            Toast.makeText(
+                                    applicationContext,
+                                    "Failed to broadcast with sound: $errorCode",
+                                    Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
         )
