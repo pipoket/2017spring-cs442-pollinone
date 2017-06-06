@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -28,8 +29,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".CreatingPoll" />
-        <activity android:name=".StartingVote" />
-        <activity android:name=".JoiningPoll" />
+        <activity android:name=".StartingVote"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".JoiningPoll"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity android:name=".SearchingPoll" />
         <activity android:name=".WaitingVoteToStart" />
         <activity android:name=".Voting" />

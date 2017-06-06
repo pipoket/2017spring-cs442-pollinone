@@ -14,6 +14,7 @@ import android.widget.Toast
 import com.cs442.sexysuckzoo.pollinone.model.Vote
 import com.cs442.sexysuckzoo.pollinone.service.PollService
 import com.cs442.sexysuckzoo.pollinone.service.StorageService
+import com.cs442.sexysuckzoo.pollinone.transoversound.PollInOneToASender
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.ConnectionResult
@@ -31,7 +32,7 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     // a message to publish
     private var mPubMessage: Message? = null
-
+    private var mSoundBroadcaster: PollInOneToASender? = null
 
     //@TODO: provide proper room id
     private var roomId : String? = "Vote #1"
@@ -49,6 +50,9 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                 .addConnectionCallbacks(this)
                 .enableAutoManage(this, this)
                 .build()
+        mSoundBroadcaster = PollInOneToASender({
+          soundBroadcastStopped()
+        })
 
         entries.add("Waiting for users to join")
         refreshUI()
@@ -57,13 +61,16 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     override fun onStart() {
         super.onStart()
         mGoogleApiClient?.connect()
+        mSoundBroadcaster?.close()
     }
 
     override fun onStop() {
-        unpublish();
+        unpublish()
         if (mGoogleApiClient?.isConnected() as Boolean) {
             mGoogleApiClient?.disconnect()
         }
+        mSoundBroadcaster?.close()
+        mSoundBroadcaster?.close()
         super.onStop()
     }
 
@@ -103,10 +110,19 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
     }
 
     // Button callback
-    fun publish(v:View) {
+    fun publish(maybeView:View?) {
+        // Nearby Message API
         var json : JSONObject? = JSONObject()
         json?.put("roomKey", roomId)
         publish(json?.toString() as String)
+
+        // Sound broadcasting
+        try {
+            val ridHigh = roomId!![0].toInt()
+            val ridLow = roomId!![1].toInt()
+            val rid = ridHigh.shl(8) + ridLow
+            mSoundBroadcaster?.sendData(rid)
+        } finally {}
     }
 
     private val TTL_IN_SECONDS = 3 * 60 // Three minutes.
@@ -170,6 +186,8 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
 
     override fun onConnectionSuspended(var1: Int) {}
 
-
+    // Transmit over Sound callbacks
+    fun soundBroadcastStopped() {
+    }
 
 }

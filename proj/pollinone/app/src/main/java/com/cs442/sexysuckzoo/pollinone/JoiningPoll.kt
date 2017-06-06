@@ -1,18 +1,24 @@
 package com.cs442.sexysuckzoo.pollinone
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
+import android.support.v4.content.ContextCompat
 import android.os.Bundle
 import android.support.annotation.NonNull
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentActivity
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.Toast
 import com.cs442.sexysuckzoo.pollinone.model.Vote
 import com.cs442.sexysuckzoo.pollinone.service.PollService
 import com.cs442.sexysuckzoo.pollinone.service.StorageService
+import com.cs442.sexysuckzoo.pollinone.transoversound.PollInOneToAReceiver
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResultCallback
@@ -28,6 +34,11 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
 
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mMessageListener: MessageListener? = null
+    private var mSoundReceiver: PollInOneToAReceiver? = null
+
+    companion object {
+        val PERM_REQUEST_CODE_RECORD = 0
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +95,36 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
             }
         }
 
+        // Sound broadcasting receiver
+        mSoundReceiver = PollInOneToAReceiver(
+                { receiverState -> Unit },
+                { payload ->
+                    val rid = payload.second
+                    val ridHigh = rid.shr(8)
+                    val ridLow = rid.and(0xff)
+                    val key = ridHigh.toChar().toString() + ridLow.toChar().toString()
+                    PollService.instance.fetchPoll(key).map {
+                        mPollList.add(it)
+                        runOnUiThread { refreshUI() }
+                    }.doOnError {
+
+                    }.onErrorReturn {
+
+                    }.subscribe {
+
+                    }
+                },
+                { errorCode ->
+                    runOnUiThread {
+                        Toast.makeText(
+                                applicationContext,
+                                "Failed to broadcast with sound: $errorCode",
+                                Toast.LENGTH_LONG).show()
+                    }
+                }
+        )
+        checkPermission()
+
         // mock
         mPollList.add(Vote(16, "HelloWorld", "y9", null, null, null, null))
         refreshUI()
@@ -92,6 +133,7 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
     override fun onStart() {
         super.onStart()
         mGoogleApiClient?.connect()
+        mSoundReceiver?.start()
     }
 
     override fun onStop() {
@@ -99,6 +141,7 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
             unsubscribe()
             mGoogleApiClient?.disconnect()
         }
+        mSoundReceiver?.close()
         super.onStop()
     }
 
@@ -182,5 +225,32 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
     private fun unsubscribe() {
         Log.i("JoiningPoll", "Unsubscribing.")
         Nearby.Messages.unsubscribe(mGoogleApiClient, mMessageListener)
+    }
+
+    // Permission for Sound Broadcasting Receiver
+    fun checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) {
+            mSoundReceiver?.notifyPermissionGrant()
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.RECORD_AUDIO), PERM_REQUEST_CODE_RECORD)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+            requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode != PERM_REQUEST_CODE_RECORD)
+            return
+
+        if (grantResults.isEmpty())
+            return
+
+        if (grantResults[0] != PackageManager.PERMISSION_GRANTED)
+            return
+
+        mSoundReceiver?.notifyPermissionGrant()
     }
 }

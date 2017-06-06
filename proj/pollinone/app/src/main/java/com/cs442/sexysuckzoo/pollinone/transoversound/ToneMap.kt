@@ -85,7 +85,7 @@ object ToneMap {
             "g" to 7536
     )
 
-    // True frequencies used to tramsmit data
+    // True frequencies used to transmit data
     val revTopTrue: HashMap<String, Int> = hashMapOf (
             "0" to 2000,
             "1" to 2112,
