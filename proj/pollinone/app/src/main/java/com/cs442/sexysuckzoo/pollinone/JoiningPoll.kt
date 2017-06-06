@@ -52,7 +52,10 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
                     // mPollList.add(json.getString("roomKey"))
                     val key = json.getString("roomKey")
                     PollService.instance.fetchPoll(key).map {
-                        mPollList.add(it)
+                        if (mPollList.indexOfFirst { item -> item.key == it.key } < 0)
+                        {
+                            mPollList.add(it)
+                        }
                         runOnUiThread { refreshUI() }
                     }.doOnError {
 
