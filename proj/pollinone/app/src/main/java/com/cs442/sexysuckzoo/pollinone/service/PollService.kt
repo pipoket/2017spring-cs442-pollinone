@@ -2,10 +2,14 @@ package com.cs442.sexysuckzoo.pollinone.service
 
 import com.cs442.sexysuckzoo.pollinone.model.Member
 import com.cs442.sexysuckzoo.pollinone.model.Vote
+import com.github.kittinunf.fuel.httpDelete
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.rx.rx_string
 import com.github.kittinunf.fuel.rx.rx_object
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import rx.Observable
 
 class PollService {
@@ -35,11 +39,14 @@ class PollService {
                 .rx_object(Vote.Deserializer())
     }
 
-    fun closePoll(id: Int, rootCredential: String): Observable<String> {
+    fun closePoll(id: Int, rootCredential: String): Observable<JsonArray> {
         val param = listOf("rootCredential" to rootCredential)
         return "/Vote/close/$id"
                 .httpGet(param)
                 .rx_string()
+                .map {
+                    JsonParser().parse(it).asJsonArray
+                }
     }
 
     fun fetchPoll(key: String): Observable<Vote> {
@@ -59,5 +66,22 @@ class PollService {
         return "/Vote/isStarted/$id"
                 .httpGet()
                 .rx_string()
+    }
+
+    fun vote(voteId: Int, credential: String): Observable<Member> {
+        val param = listOf("credential" to credential)
+        return "/Members/vote/$voteId"
+                .httpGet(param)
+                .rx_object(Member.Deserializer())
+    }
+
+    fun withdraw(voteId: Int, credential: String): Observable<JsonObject> {
+        val param = listOf("credential" to credential)
+        return "/Members/vote/$voteId"
+                .httpDelete(param)
+                .rx_string()
+                .map {
+                    JsonParser().parse(it).asJsonObject
+                }
     }
 }
