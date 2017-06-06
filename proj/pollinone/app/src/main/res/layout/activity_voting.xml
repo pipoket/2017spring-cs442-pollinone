@@ -4,13 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/activity_voting"
     tools:context="com.cs442.sexysuckzoo.pollinone.Voting">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/currentVoteTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vote" />
+        android:text="Now voting for nothing"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/toggleButton"
+        app:layout_constraintLeft_toLeftOf="@+id/activity_voting"
+        app:layout_constraintRight_toRightOf="@+id/activity_voting"
+        android:layout_marginBottom="10dp"/>
 
     <ToggleButton
         android:id="@+id/toggleButton"

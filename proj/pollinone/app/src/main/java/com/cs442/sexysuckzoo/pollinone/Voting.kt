@@ -50,6 +50,12 @@ class Voting : AppCompatActivity() {
     fun refreshUI(member: Member) {
         // @TODO: Feedback to user which selection has been chosen
         StorageService.instance.member?.item = member.item
+        if (member.item == null) {
+            currentVoteTextView.text = "Now voting for nothing"
+        } else {
+            val item = (member.item as Int) + 1
+            currentVoteTextView.text = "Now voting for item #$item"
+        }
     }
 
     fun vote() {
