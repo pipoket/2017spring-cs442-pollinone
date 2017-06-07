@@ -128,7 +128,7 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
         checkPermission()
 
         // mock
-        mPollList.add(Vote(16, "HelloWorld", "y9", null, null, null, null))
+        // mPollList.add(Vote(16, "HelloWorld", "y9", null, null, null, null))
         refreshUI()
     }
 
