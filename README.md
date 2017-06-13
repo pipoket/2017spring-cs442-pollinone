@@ -27,8 +27,8 @@ Computing class held in KAIST.
 The application and code is provided AS IS, and we won't take any resposibilities emerged
 by using this application or code.
 
-## Requirements
+## Running Environment
 1. Android 5.0 or above
 2. `Google Play` application is needed to use `Google Nearby` functionality.
 
-    2-1. If your device does not have `Google Play`, then please click `publish` when boradcating a poll information, which generate an audible encoded sound. 
+    2-1. If your device does not have `Google Play`, then please click `publish` button when boradcating a poll information, which generates an audible encoded sound. 
