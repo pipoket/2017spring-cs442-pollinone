@@ -33,6 +33,8 @@ by using this application or code.
 
     2-1. If your device does not have `Google Play`, then please click `publish` button when boradcating a poll information, which generates an audible encoded sound. 
 
+3. To test our system fully, you need at least 2 devices, one for creating the poll and the other(s) for participating in the poll.
+
 ## Build Environment
 ### Requirement
 1. Android Studio 2.3.3 [[link]](https://developer.android.com/studio/index.html?hl=ko)
