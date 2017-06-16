@@ -115,14 +115,6 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         var json : JSONObject? = JSONObject()
         json?.put("roomKey", roomId)
         publish(json?.toString() as String)
-
-        // Sound broadcasting
-        try {
-            val ridHigh = roomId!![0].toInt()
-            val ridLow = roomId!![1].toInt()
-            val rid = ridHigh.shl(8) + ridLow
-            mSoundBroadcaster?.sendData(rid)
-        } finally {}
     }
 
     private val TTL_IN_SECONDS = 3 * 60 // Three minutes.
@@ -160,8 +152,20 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
                         Log.i(TAG, "Published failed.")
                     }
                 }
+
+        publishSound()
     }
 
+    private fun publishSound() {
+        // Sound broadcasting
+        try {
+            val ridHigh = roomId!![0].toInt()
+            val ridLow = roomId!![1].toInt()
+            val rid = ridHigh.shl(8) + ridLow
+            mSoundBroadcaster?.sendData(rid)
+        } finally {}
+
+    }
     private fun unpublish() {
         Log.i("StartVote", "Unpublishing.")
         if (mPubMessage != null) {
