@@ -43,4 +43,4 @@ by using this application or code.
 ### How to build
 1. Clone or download the repository. The project is located on `./proj/pollinone`
 2. Open the project with Andorid Sudio, where Kotlin Plugin is installed. 
-3. Run `build` and test it. 
+3. Run `build` and enjoy the app. 
