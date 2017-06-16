@@ -180,6 +180,7 @@ class StartingVote : AppCompatActivity(), GoogleApiClient.OnConnectionFailedList
         // the failure silently
 
         // ...
+        Toast.makeText(applicationContext, "failed to connect Google Nearby.", Toast.LENGTH_LONG).show()
     }
 
     override fun onConnected(var1: Bundle?) {
