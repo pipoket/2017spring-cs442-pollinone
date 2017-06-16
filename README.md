@@ -32,3 +32,13 @@ by using this application or code.
 2. `Google Play` application is needed to use `Google Nearby` functionality.
 
     2-1. If your device does not have `Google Play`, then please click `publish` button when boradcating a poll information, which generates an audible encoded sound. 
+
+## Build Environment
+### Requirement
+1. Android Studio 2.3.3 [[link]](https://developer.android.com/studio/index.html?hl=ko)
+2. Kotlin plugin [[link]](https://kotlinlang.org/docs/tutorials/kotlin-android.html#installing-the-kotlin-plugin)
+
+### How to build
+1. Clone or download the repository
+2. Open the project with Andorid Sudio, where Kotlin Plugin is installed. 
+3. Run `build` and test it. 
