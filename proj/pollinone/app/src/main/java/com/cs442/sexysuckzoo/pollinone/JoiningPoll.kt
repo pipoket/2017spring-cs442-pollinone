@@ -187,7 +187,7 @@ class JoiningPoll : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListe
 
     override fun onConnectionFailed(result: ConnectionResult) {
         Log.e("JoiningPoll", "onConnectionFailed")
-        Toast.makeText(applicationContext, "failed to connect Google Nearby", Toast.LENGTH_LONG).show()s
+        Toast.makeText(applicationContext, "failed to connect Google Nearby", Toast.LENGTH_LONG).show()
     }
     override fun onConnected(var1: Bundle?) {
         subscribe()
