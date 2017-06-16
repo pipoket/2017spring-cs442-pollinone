@@ -31,7 +31,7 @@ by using this application or code.
 1. Android 5.0 or above
 2. `Google Play` application is needed to use `Google Nearby` functionality.
 
-    2-1. If your device does not have `Google Play`, then please click `publish` button when boradcating a poll information, which generates an audible encoded sound. 
+    2-1. If your device does not have `Google Play`, then the app only use the audible sound to boradcast a poll information.
 
 3. To test our system fully, you need at least 2 devices, one for creating the poll and the other(s) for participating in the poll.
 
@@ -41,6 +41,6 @@ by using this application or code.
 2. Kotlin plugin [[link]](https://kotlinlang.org/docs/tutorials/kotlin-android.html#installing-the-kotlin-plugin)
 
 ### How to build
-1. Clone or download the repository
+1. Clone or download the repository. The project is located on `./proj/pollinone`
 2. Open the project with Andorid Sudio, where Kotlin Plugin is installed. 
 3. Run `build` and test it. 
